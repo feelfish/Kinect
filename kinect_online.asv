@@ -1,5 +1,12 @@
 imaqreset
 kinect_on = videoinput('kinect',2);
+
+%Generate colum and row indecies to get mass;
+row_index  = repmat([1:424]',1,512);
+col_index = repmat([1:512],424,1);
+
+
+
 try
     set(kinect_on,'framesperTrigger',1,'TriggerRepeat',Inf);
     start(kinect_on); % delete(c120)
@@ -17,13 +24,27 @@ while islogging(kinect_on)
     flushdata(kinect_on);
           
     diff_C = (diff_A&diff_B); 
-    pointcloud = pcfromkinect(frame2,kinect_on);
-    [indices,dists] = findNearestNeighbors(ptCloud,point,K)
+    erode_mask = strel('rectangle', [5,4]);
+    %denoised_diff_C = imerode(diff_C,erode_mask);
+    
+    denoised_diff_C = imopen(diff_C,erode_mask);
+    
+%Find Centroids using center of mass
+x_center = den
+
+
+    
+%     find_cent = regionprops(denoised_diff_C,'centroid');
+%     centroids = find_cent.Centroid;
+    
+%     pointcloud = pcfromkinect(frame2,kinect_on);
+%     [indices,dists] = findNearestNeighbors(pointcloud,point,K);
     
     frame1 = frame2;
     frame2 = frame3;
     %pause(0.05);
-     imshow(diff_C);drawnow 
+     imshow(denoised_diff_C);hold on 
+     plot(centroids(1),centroids(2)); drawnow 
 end
 
 catch err
